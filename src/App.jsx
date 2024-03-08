@@ -1,13 +1,43 @@
 import './App.css'
-
+import { useDispatch} from 'react-redux';
+import { login,logout } from './store/authslice';
+import { useState,useEffect } from 'react';
+import authservice from './appwrite/auth';
+import Header from './components/Header/Header';
+import Footer from './components/Footer/Footer';
 function App() {
-  console.log(import.meta.env.VITE_APPWRITE_URL);
+  const [loading, setloading] = useState(true)
+  const dispatch=useDispatch();
+  useEffect(() => {
+   authservice.getaccount()
+              .then((userdata)=>{
+                if(userdata)
+                {
+                  dispatch(login({userdata}))
+                }
+                else{
+                  dispatch(logout())
+                }
+              })
+              .catch((error)=>{
+                console.log(error)
+              })
+              .finally(()=>setloading(false))
+    
+  }, [])
+  
 
-  return (
-    <>
-     <h1>BLog App </h1>
-    </>
-  )
+  console.log(import.meta.env.VITE_APPWRITE_URL);
+  return !loading ? 
+  ( <div>
+    <Header/>
+    <main>
+
+    </main>
+    <Footer/>
+  </div>
+    ) 
+    : (null)
 }
 
 export default App
